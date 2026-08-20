@@ -94,5 +94,5 @@ channels above - they are read by the people who build Proxyma.
 Proxyma is a commercial product and is not open source. This repository exists so that downloads
 are available to everyone without a GitHub account or sign-in; it contains no source code.
 
-Licence terms are in the [End User Licence Agreement](https://proxyma.ai/eula), and
+License terms are in the [End User License Agreement](https://proxyma.ai/eula), and
 [pricing is here](https://proxyma.ai/pricing).
