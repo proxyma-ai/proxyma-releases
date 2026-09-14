@@ -38,7 +38,7 @@ Each release page lists what changed in that version, along with the files below
 ## Installing on Windows
 
 Proxyma's installer is not yet signed with a commercial certificate, so Windows SmartScreen will
-warn that the publisher is unrecognised.
+warn that the publisher is unrecognized.
 
 - Choose **More info**, then **Run anyway** to continue.
 - If you would rather confirm the file first, verify its checksum below - every release lists a
@@ -52,12 +52,12 @@ Compare the digest shown next to the file on the release page with the file you 
 
 ```powershell
 # Windows (PowerShell)
-Get-FileHash .\proxyma-x64-v1.1.0.exe -Algorithm SHA256
+Get-FileHash .\proxyma-x64-v<version>.exe -Algorithm SHA256
 ```
 
 ```bash
 # Linux
-sha256sum proxyma-x64-v1.1.0.AppImage
+sha256sum proxyma-x64-v<version>.AppImage
 ```
 
 If the two values match, the download is intact.
