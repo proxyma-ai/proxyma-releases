@@ -7,13 +7,14 @@
   tag - after however long the installer took to build, and naming neither the cause nor the
   repository. This file is what keeps the repository publishable. Do not empty it.
 
-  Releases are published automatically from our main repository when a v*.*.* tag is pushed.
+  Releases are published from the main repository by tools/release/publish.sh, run by hand.
 -->
 
 # Proxyma downloads
 
-Official download host for the **[Proxyma](https://proxyma.ai)** desktop app - semantic search
-and an AI agent over your own documents, running entirely on your machine.
+Official download host for **[Proxyma](https://proxyma.ai)** - an AI assistant for your own
+documents: hybrid search and an agent over your folders, wikis, tickets, repositories and mail,
+with cited answers. It runs on your machine.
 
 ### **[Download the latest version](https://github.com/proxyma-ai/proxyma-releases/releases/latest)**
 
@@ -21,78 +22,73 @@ Each release page lists what changed in that version, along with the files below
 
 ## Which file do I need?
 
-| Your system | Download | Requirements |
+| You want | Download | Needs |
 |---|---|---|
-| **Windows** | `proxyma-x64-v<version>.exe` | Windows 10 or 11, 64-bit |
-| **Linux** | `proxyma-x64-v<version>.AppImage` | Any glibc distribution, x86-64 |
+| **Desktop on Windows** | `proxyma-x64-v<version>.exe` | Windows 10 or 11, 64-bit |
+| **Desktop on Ubuntu or Debian** | `proxyma_<version>_amd64.deb`, or the APT repository below | x86-64, a desktop session |
+| **Home Server** (one person, in Docker) | `proxyma-homeserver-<version>-compose.tar.gz` | Docker |
+| **Enterprise Server** (a team, in Docker) | `proxyma-enterprise-server-<version>-compose.tar.gz` | Docker |
+| **Kubernetes** | `proxyma-community-<version>.tgz` or `proxyma-enterprise-<version>.tgz` (Helm charts) | Kubernetes 1.27 or newer |
 | **macOS** | Not available yet | - |
 
-- Both downloads are **self-contained**. Everything Proxyma needs is inside, so there is nothing
-  to install beforehand.
-- On Linux, mark the file executable before running it: `chmod +x proxyma-x64-*.AppImage`
-- You may also see a `-update.zip` file. That one is used by Proxyma's built-in updater to update
-  an existing installation - you do not need to download it yourself.
-- GitHub attaches **Source code (zip/tar.gz)** to every release automatically. Proxyma is not open
-  source, so those archives contain only this page.
+- The Desktop installers are small. The first start downloads the rest of Proxyma, about 650 MB,
+  and later updates download only what changed.
+- `parts-*.txt` and `SHA256SUMS*` are what the built-in updater and you use to check a download.
+  You do not need to open them otherwise.
+- Releases marked **Pre-release** are development builds for testing. Installations are offered
+  them only with **Settings > Updates > Development builds** turned on.
 
-## Installing on Windows
-
-Proxyma's installer is not yet signed with a commercial certificate, so Windows SmartScreen will
-warn that the publisher is unrecognized.
-
-- Choose **More info**, then **Run anyway** to continue.
-- If you would rather confirm the file first, verify its checksum below - every release lists a
-  SHA-256 for each file.
-
-The [Windows manual](https://proxyma.ai/docs/desktop/) shows exactly what this looks like.
-
-## Verifying your download
-
-Compare the digest shown next to the file on the release page with the file you downloaded:
-
-```powershell
-# Windows (PowerShell)
-Get-FileHash .\proxyma-x64-v<version>.exe -Algorithm SHA256
-```
+## Ubuntu and Debian: the APT repository
 
 ```bash
-# Linux
-sha256sum proxyma-x64-v<version>.AppImage
+sudo install -d -m 0755 /etc/apt/keyrings
+sudo wget -qO /etc/apt/keyrings/proxyma.asc https://proxyma.ai/keys/proxyma-release.asc
+echo "deb [signed-by=/etc/apt/keyrings/proxyma.asc] https://github.com/proxyma-ai/proxyma-releases/releases/download/apt/ ./" | sudo tee /etc/apt/sources.list.d/proxyma.list
+sudo apt update && sudo apt install proxyma
 ```
 
-If the two values match, the download is intact.
+The key's fingerprint is `BE3A B092 AB25 4FA4 5C57  8AF4 F571 F889 94F6 B817`.
+
+## Windows: the SmartScreen warning
+
+The installer is not signed with a commercial code-signing certificate, so SmartScreen may say the
+publisher is unrecognized. Check the file came from this page, then choose **More info**, then
+**Run anyway**.
+
+## Verifying a download
+
+Every release carries `SHA256SUMS.txt`, signed with the release key above (`SHA256SUMS.txt.asc`):
+
+```bash
+gpg --import proxyma-release.asc            # from https://proxyma.ai/keys/proxyma-release.asc
+gpg --verify SHA256SUMS.txt.asc SHA256SUMS.txt
+sha256sum --check --ignore-missing SHA256SUMS.txt
+```
+
+On Windows, compare `Get-FileHash .\proxyma-x64-v<version>.exe -Algorithm SHA256` with the line for
+that file in `SHA256SUMS.txt`. The Docker images are signed with cosign:
+
+```bash
+cosign verify --key https://proxyma.ai/keys/cosign-release.pub ghcr.io/proxyma-ai/proxyma-homeserver:<version>
+```
 
 ## Linking to a download
 
-- **`https://github.com/proxyma-ai/proxyma-releases/releases/latest`** always points at the newest
-  version. It is safe to bookmark or share.
-- There is no permanent direct-download link, because our filenames include the version number.
-  To fetch the latest automatically, read the file name from the API first:
+`https://github.com/proxyma-ai/proxyma-releases/releases/latest` always points at the newest
+version. File names include the version, so there is no permanent direct link to a file.
 
-```bash
-curl -s https://api.github.com/repos/proxyma-ai/proxyma-releases/releases/latest \
-  | grep -o '"browser_download_url": *"[^"]*\.AppImage"'
-```
+## Documentation and help
 
-## Documentation
+- **[Manual](https://proxyma.ai/docs/manual/)** - installing, every edition, sources, the agent
+- **[Release notes](https://proxyma.ai/docs/release-notes/)**
+- Email **contact@proxyma.ai**, or **Send feedback** inside the app
 
-- **[Getting started and full manual](https://proxyma.ai/docs/desktop/)** - Windows
-- **[Linux manual](https://proxyma.ai/docs/linux/)**
-- **[Release notes](https://proxyma.ai/docs/release-notes/)** - what changed across versions
-- **[Frequently asked questions](https://proxyma.ai/docs/faq/)**
+This repository hosts downloads only and has no issue tracker.
 
-## Help and feedback
+## Source code
 
-- Email **contact@proxyma.ai**
-- Or use **Send feedback** inside the app, which reaches us directly and can include diagnostics
-
-This repository hosts downloads only and has no issue tracker, so please use one of the two
-channels above - they are read by the people who build Proxyma.
-
-## About this repository
-
-Proxyma is a commercial product and is not open source. This repository exists so that downloads
-are available to everyone without a GitHub account or sign-in; it contains no source code.
-
-License terms are in the [End User License Agreement](https://proxyma.ai/eula), and
-[pricing is here](https://proxyma.ai/pricing).
+**Proxyma Community** is free software under the GNU AGPL v3; its source is at
+**[proxyma-ai/proxyma-community](https://github.com/proxyma-ai/proxyma-community)**. Proxyma
+Enterprise and the add-ons are commercial - see [pricing](https://proxyma.ai/pricing) and the
+[End User License Agreement](https://proxyma.ai/eula). The "Source code" archives GitHub attaches to
+every release contain only this page.
